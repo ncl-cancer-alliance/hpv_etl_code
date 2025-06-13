@@ -1,13 +1,13 @@
-#Functions for interacting with the database
+# Functions for interacting with the database
 
-#Import packages
+# Import packages
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, text, insert
 
-#Establish a connection to the database
+# Establish a connection to the database
 def db_connect(dsn, database):
     
-    #Create Connection String
+    # Create Connection String
     conn_str = (f"mssql+pyodbc:///"
                 f"?odbc_connect=DSN={dsn};"
                 f"DATABASE={database};"
