@@ -109,3 +109,23 @@ def execute_query(engine, query):
     with engine.connect() as con:
         con.execute(text(query))
         con.commit()
+
+
+# Upload the HPV data
+def upload_hpv_data(data, table, dsn="SANDPIT", 
+                         database="Data_Lab_NCL_Dev", 
+                         schema="GrahamR"):
+    
+    #Establish connection
+    engine = db_connect(dsn, database)
+
+    with engine.connect() as con:
+        # Truncate existing data to prevent overlapping data in the table
+        print("    -> Removing existing data")
+        con.execute(text(f"TRUNCATE TABLE [{schema}].[{table}];"))
+        # Upload the data
+        print(f"    -> Uploading new data ({data.shape[0]} rows)")
+        data.to_sql(table, con, schema=schema, if_exists="append", 
+                    index=False, chunksize=100, method="multi")
+        
+        con.commit()
