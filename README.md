@@ -1,55 +1,72 @@
-# NCL Cancer Alliance Project Template
+# HPV Vaccination ETL
 
-This git repository contains a shell that should be used as the default structure for new projects
-in the analytical team.  It won't fit all circumstances perfectly, and you can make changes and issue a 
-pull request for new features / changes.
+This git repository contains code to process HPV Vaccination coverage data.
 
-The aim of this template is two-fold: firstly to give a common structure for analytical projects to aid
-reproducibility, secondly to allow for additional security settings as default to prevent accidental upload of files that should not be committed to Git and GitHub.
+The code performs a basic ETL process on the data available and uploads the data to the NCL Data Warehouse
 
-__Please update/replace this README file with one relevant to your project__
+## Steps to Run This ETL Project
 
-## To use this template, please use the following practises:
+For a detailed overview of the First Time Installation, check the NCL scripting onboarding document [here](https://nhs.sharepoint.com/:w:/r/sites/msteams_38dd8f/Shared%20Documents/Document%20Library/Documents/Git%20Integration/Internal%20Scripting%20Guide.docx?d=wc124f806fcd8401b8d8e051ce9daab87&csf=1&web=1&e=CmK9V3).
 
-* Put any data files in the `data` folder.  This folder is explicitly named in the .gitignore file.  A further layer of security is that all xls, xlsx, csv and pdf files are also explicit ignored in the whole folder as well.  ___If you need to commit one of these files, you must use the `-f` (force) command in `commit`, but you must be sure there is no identifiable data.__
-* Save any documentation in the `docs` file.  This does not mean you should avoid commenting your code, but if you have an operating procedure or supporting documents, add them to this folder.
-* Please save all output: data, formatted tables, graphs etc. in the output folder.  This is also implicitly ignored by git, but you can use the `-f` (force) command in `commit` to add any you wish to publish to github.
+An overview of the setup is as follows:
+
+1. **Set Up Your Environment**  
+   - Install Python
+   - Install [Visual Studio Code](https://code.visualstudio.com/)  
+   - Install the Python extension in VS Code  
+
+2. **Clone This Repository**  
+   - Open VS Code  
+   - Press `Ctrl+Shift+P` and select `Git: Clone`  
+   - Paste this repo’s URL and choose a folder to save the project
+
+3. **Create a Virtual Environment**
+   ```bash
+   python -m venv venv
+   ```
+
+4. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+**DOWNLOADING THE DATA:**
+
+The datasets for this project can be found [here](https://www.gov.uk/government/collections/vaccine-uptake).
+
+Use Ctrl F to search for 'HPV' to get to the correct section. There you will find links to different academic years. This Project uses data back until 2019.
+
+For each year do the following:
+- Click the link e.g. "Human papillomavirus (HPV) vaccine coverage estimates in England: 2023 to 2024"
+- Click the link which contains the Excel file (usually second one down), Download and save in the 'Data' folder in the VS code project directory.
 
 
-### Please also consider the following:
-* Linting your code.  This is a formatting process that follows a rule set.  We broadly encourage the tidyverse standard, and recommend the `lintr` package.
-* Comment your code to make sure others can follow.
-* Consider your naming conventions: we recommend `snake case` where spaces are replaced by underscores and no capitals are use. E.g. `outpatient_referral_data`
+The tab used in the ETL process is called 'Local_authority'. 
+
+Currently, all Excel files must be formatted in the same way for the code to run accurately. The format is the same as in the 2023/2024 file. The following are the conditions that the format needs to meet:
+
+- The text in Cell A1 must end with the date in this format 'September 20XX to August 20XX'. This is because the code takes the date from the end of this cell and creates a column using it.
+- Column Headers must begin at A3
+- The first row of data must begin at A4. 
+- Any rows additional rows can be deleted, such as 'Range'
+- Columns that include 'Dose 2' must be deleted. From 2023/2024, it moved to 1 dose only.
+
+Once Local_authority tab is formatted this way, the files can be saved again in the 'Data' folder of the project directory.
 
 
-This repository is dual licensed under the [Open Government v3]([https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/) & MIT. All code can outputs are subject to Crown Copyright.
+**EXCECUTING THE CODE:**
 
-## Scripting Guidance
-
-Please refer to the Internal Scripting Guide documentation for instructions on setting up coding projects including virtual environments (venv).
-
-The Internal Scripting Guide is available here: [Internal Scripting Guide](https://nhs.sharepoint.com/:w:/r/sites/msteams_38dd8f/Shared%20Documents/Document%20Library/Documents/Git%20Integration/Internal%20Scripting%20Guide.docx?d=wc124f806fcd8401b8d8e051ce9daab87&csf=1&web=1&e=qt05xI)
-
-## Changelog
-
-### [1.0.0] - 2025-04-08
-#### Added
-- Initial release of the project template
-
-### [1.1.0] - 2025-05-15
-#### Added
-- Added sample.env file to the template
-#### Modified
-- Added toml to requirements.txt file
-
-### [1.1.1] - 2025-05-28
-#### Modified
-- References to the NCL ICB scripting documentation have been replaced with the internal documentation.
-
-*The contents and structure of this template were largely based on the template used by the NCL ICB Analytics team available here: [NCL ICB Project Template](https://github.com/ncl-icb-analytics/ncl_project)*
+- Open the project directory.
+- Open VS Code.
+- Open a new folder (Ctrl+K Ctrl+O) and select the HPV_DATA folder .
+- Enable the virtual environment (see the onboarding document linked in the First Time Installation section).
+- Execute the src/main.py file by opening the src/main.py file in VSCode and using the Run arrow button in the top right of the window.
+- Once Excecuted, the code will print 'Uploading new data (*number of rows*)'
 
 ## Licence
-This repository is dual licensed under the [Open Government v3]([https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/) & MIT. All code can outputs are subject to Crown Copyright.
+This repository is dual licensed under the Open Government v3 & MIT. All code can outputs are subject to Crown Copyright.
 
 ## Contact
-Jake Kealey - jake.kealey@nhs.net
+Eric Pinto - eric.pinto@nhs.net
