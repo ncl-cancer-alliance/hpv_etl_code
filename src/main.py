@@ -35,6 +35,8 @@ for file_name in file_paths:
 
     # Remove columns with %
     df = df.drop(columns=[col for col in df.columns if '%' in col])
+    # Remove Columns of data for 2 Doses
+    df = df.drop(columns=[col for col in df.columns if '2 doses' in col])
 
     # Melt to reshape columns
     df_melted = df.melt(id_vars=["Local authority"], var_name="Category", value_name="Value")
