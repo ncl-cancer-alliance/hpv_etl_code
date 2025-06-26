@@ -51,7 +51,6 @@ Currently, all Excel files must be formatted in the same way for the code to run
 - Column Headers must begin at A3
 - The first row of data must begin at A4. 
 - Any rows additional rows can be deleted, such as 'Range'
-- Columns that include 'Dose 2' must be deleted. From 2023/2024, it moved to 1 dose only.
 
 Once Local_authority tab is formatted this way, the files can be saved again in the 'Data' folder of the project directory.
 
