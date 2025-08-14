@@ -1,8 +1,9 @@
-# Functions for interacting with the database
+# Functions for interacting with the database. Includes Functions for both Sandpit and Snowflake.
 
 # Import packages
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, text, insert
+from snowflake.connector.pandas_tools import write_pandas
 
 # Establish a connection to the database
 def db_connect(dsn, database):
@@ -111,21 +112,80 @@ def execute_query(engine, query):
         con.commit()
 
 
-# Upload the HPV data
-def upload_hpv_data(data, table, dsn="SANDPIT", 
-                         database="Data_Lab_NCL_Dev", 
-                         schema="GrahamR"):
-    
-    #Establish connection
-    engine = db_connect(dsn, database)
+# Upload to Sandpit commented and replaced by Snowflake.
 
-    with engine.connect() as con:
-        # Truncate existing data to prevent overlapping data in the table
-        print("    -> Removing existing data")
-        con.execute(text(f"TRUNCATE TABLE [{schema}].[{table}];"))
-        # Upload the data
-        print(f"    -> Uploading new data ({data.shape[0]} rows)")
-        data.to_sql(table, con, schema=schema, if_exists="append", 
-                    index=False, chunksize=100, method="multi")
-        
-        con.commit()
+# Upload the HPV data
+# def upload_hpv_data(data, table, dsn="SANDPIT", 
+#                         database="Data_Lab_NCL_Dev", 
+#                         schema="GrahamR"):
+#    
+#   #Establish connection
+#    engine = db_connect(dsn, database)
+#
+#    with engine.connect() as con:
+#        # Truncate existing data to prevent overlapping data in the table
+#        print("    -> Removing existing data")
+#        con.execute(text(f"TRUNCATE TABLE [{schema}].[{table}];"))
+#        # Upload the data
+#        print(f"    -> Uploading new data ({data.shape[0]} rows)")
+#        data.to_sql(table, con, schema=schema, if_exists="append", 
+#                    index=False, chunksize=100, method="multi")
+#        
+#        con.commit()
+
+
+# Function to upload a dataframe to Snowflake.
+
+def upload_hpv_data(ctx, df, destination, replace=True):
+
+    """
+    Function to upload a dataframe to Snowflake.
+
+    inputs:
+    - ctx: Snowflake connection object 
+    (https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
+    - df: Dataframe object
+    - destination: Full table name of the destination
+    (e.g. DATABASE_NAME.SCHEMA_NAME.TABLE_NAME)
+    - replace: If True, the destination is TRUNCATED before uploading new data
+    (If the upload fails, the truncation is rollbacked)
+
+    output:
+    Returns Boolean value if the upload was successful
+    """
+
+    df = df.copy()
+    df.reset_index(drop=True, inplace=True)
+    #Needed to prevent "null" strings in the destination
+    df = df.where(pd.notnull(df), None)
+
+    cur = ctx.cursor()
+    destination_segs = destination.split(".")
+    success = False
+
+    try:
+        if replace:
+            cur.execute(f"TRUNCATE TABLE {destination}")
+
+        # Upload DataFrame
+        success, nchunks, nrows, _ = write_pandas(
+            conn=ctx,
+            df=df,
+            table_name=destination_segs[2],
+            schema=destination_segs[1],
+            database=destination_segs[0],
+            overwrite=False
+        )
+
+        if not success:
+            raise Exception("Failed to write DataFrame to Snowflake.")
+
+        print(f"Uploaded {nrows} rows to {destination}")
+    except Exception as e:
+        print("Data ingestion failed with error:", e)
+        cur.execute("ROLLBACK") #Undoes truncation on upload error
+
+    finally:
+        cur.close()
+    
+    return success

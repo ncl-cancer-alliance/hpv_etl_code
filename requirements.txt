@@ -25,7 +25,7 @@ pandas==2.3.1
 # great-tables == 0.17.0
 
 # Interface
-# streamlit == 1.44.1
+# streamlit == 1.44.1p
 # dash == 3.0.2
 
 # SQL connections
