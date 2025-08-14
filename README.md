@@ -61,8 +61,9 @@ Once Local_authority tab is formatted this way, the files can be saved again in 
 - Open VS Code.
 - Open a new folder (Ctrl+K Ctrl+O) and select the HPV_DATA folder .
 - Enable the virtual environment (see the onboarding document linked in the First Time Installation section).
+- Ensure you fill in your Snowflake connection details in a .env file
 - Execute the src/main.py file by opening the src/main.py file in VSCode and using the Run arrow button in the top right of the window.
-- Once Excecuted, the code will print 'Uploading new data (*number of rows*)'
+- Once Excecuted, the code will print 'Uploaded X rows to MODELLING.CANCER__PRIMARY_CARE.HPV_UPTAKE'
 
 ## Licence
 This repository is dual licensed under the Open Government v3 & MIT. All code can outputs are subject to Crown Copyright.
