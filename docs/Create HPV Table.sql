@@ -1,12 +1,9 @@
-DROP TABLE [Data_Lab_NCL_Dev].[GrahamR].[Hpv_Data]
-
-CREATE TABLE [Data_Lab_NCL_Dev].[GrahamR].[Hpv_Data](
-	Local_Authority varchar(40),
-	Year_Group varchar(10),
-	Gender varchar(20),
-	Number int,
-	Number_Vaccinated int,
-	Academic_Year_End_Date date,
-	Academic_Year_Text varchar(40),
-	Extract_Date timestamp
-) 
+create or replace TABLE MODELLING.CANCER__PRIMARY_CARE.HPV_UPTAKE (
+	LOCAL_AUTHORITY VARCHAR(16777216),
+	YEAR_GROUP VARCHAR(16777216),
+	GENDER VARCHAR(16777216),
+	NUMBER NUMBER(38,0),
+	NUMBER_VACCINATED NUMBER(38,0),
+	ACADEMIC_YEAR_END_DATE DATE,
+	ACADEMIC_YEAR_TEXT VARCHAR(16777216)
+);
