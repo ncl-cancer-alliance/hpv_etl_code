@@ -5,6 +5,9 @@ import utils.database_util as db
 from datetime import datetime
 import glob  # Allows dynamic file selection
 from sqlalchemy import create_engine, MetaData, Table, text, insert
+from dotenv import load_dotenv
+import os
+from snowflake.connector import connect
 
 ## Load Data
 
@@ -107,6 +110,25 @@ year_df = year_df.groupby(
 
 # Combine 'All Years' dataset with 'Both' gender records
 final_df = pd.concat([second_df, year_df], ignore_index=True)
+final_df.columns = [c.upper() for c in final_df.columns]
 
+#Establish Snowflake connection
+load_dotenv(override = True)
 
-db.upload_hpv_data(data=final_df, table="Hpv_Data")
+database= os.getenv("DATABASE")
+schema= os.getenv("SCHEMA")
+table_prov = os.getenv("DESTINATION_TABLE") 
+
+ctx = connect(
+    account= os.getenv("ACCOUNT"),
+    user= os.getenv("USER"),
+    authenticator= os.getenv("AUTHENTICATOR"),
+    role= os.getenv("ROLE"),
+    warehouse= os.getenv("WAREHOUSE"),
+    database= database,
+    schema= schema
+)
+
+destination_prov = f"{database}.{schema}.{table_prov}"
+
+db.upload_hpv_data(ctx, final_df, destination_prov, replace = False)
