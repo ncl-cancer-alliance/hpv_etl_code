@@ -2,7 +2,6 @@
 
 # Import packages
 import pandas as pd
-from sqlalchemy import create_engine, MetaData, Table, text, insert
 from snowflake.connector.pandas_tools import write_pandas
 
 

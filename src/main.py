@@ -1,12 +1,11 @@
 # Import Packages
 
+import glob  # Allows dynamic file selection
+import os
 import pandas as pd
 import utils.database_util as db
 from datetime import datetime
-import glob  # Allows dynamic file selection
-from sqlalchemy import create_engine, MetaData, Table, text, insert
 from dotenv import load_dotenv
-import os
 from snowflake.connector import connect
 
 ## Load Data
