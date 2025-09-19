@@ -30,7 +30,7 @@ pandas==2.3.1
 
 # SQL connections
 pyodbc==5.2.0
-sqlalchemy==2.0.40
+# sqlalchemy==2.0.40
 
 # Excel output
 openpyxl==3.1.5

@@ -2,7 +2,7 @@
 
 This git repository contains code to process HPV Vaccination coverage data.
 
-The code performs a basic ETL process on the data available and uploads the data to the NCL Data Warehouse
+The code performs a basic ETL process on the data available and uploads the data to Snowflake - into the DEV_MODELLING Database and CANCER__VACCINATION Schema.
 
 ## Steps to Run This ETL Project
 
@@ -54,12 +54,11 @@ Currently, all Excel files must be formatted in the same way for the code to run
 
 Once Local_authority tab is formatted this way, the files can be saved again in the 'Data' folder of the project directory.
 
+NOTE - This python code replaces the data in the table each time it is run. Therefore, ensure you have *all* Academic Years of data saved in the 'Data' folder of the project directory.
 
 **EXCECUTING THE CODE:**
 
-- Open the project directory.
-- Open VS Code.
-- Open a new folder (Ctrl+K Ctrl+O) and select the HPV_DATA folder .
+- Open the HPV_DATA project folder in VS Code.
 - Enable the virtual environment (see the onboarding document linked in the First Time Installation section).
 - Ensure you fill in your Snowflake connection details in a .env file
 - Execute the src/main.py file by opening the src/main.py file in VSCode and using the Run arrow button in the top right of the window.
