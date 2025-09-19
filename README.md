@@ -54,6 +54,7 @@ Currently, all Excel files must be formatted in the same way for the code to run
 
 Once Local_authority tab is formatted this way, the files can be saved again in the 'Data' folder of the project directory.
 
+NOTE - This python code replaces the data in the table each time it is run. Therefore, ensure you have *all* Academic Years of data saved in the 'Data' folder of the project directory.
 
 **EXCECUTING THE CODE:**
 
