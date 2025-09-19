@@ -78,7 +78,7 @@ combined_df.replace("[E]", None, inplace=True)
 combined_df.replace("[DS]", None, inplace=True)
 
 
-## Add 'Both' Gender Category
+## Add 'Both' Gender Category (Male, Female, *Both*)
 both_df = combined_df.copy()
 both_df["Gender_Name"] = "Both"
 
@@ -95,7 +95,7 @@ both_df = both_df.groupby(
 all_gender_df = pd.concat([combined_df, both_df], ignore_index=True)
 
 
-## Add 'All' Year Category
+## Add 'All' Year Category (8, 9, 10, *All*)
 year_df = all_gender_df.copy()
 year_df["Year_Group_Number"] = "All"
 
