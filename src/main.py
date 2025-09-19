@@ -8,10 +8,13 @@ from datetime import datetime
 from dotenv import load_dotenv
 from snowflake.connector import connect
 
+# Get today's date for Extract Date column
+extract_date = pd.to_datetime(datetime.today()).date()
+
 ## Load Data
 
 # Load all relevant Excel files
-file_paths = glob.glob("./data/HPV-data-tables-*.xlsx")  # Selects all matching files
+file_paths = glob.glob("./data/*.xlsx")  # Selects all xlsx files in Data folder
 
 # Create an empty list to store results
 dataframes = []
@@ -32,8 +35,6 @@ for file_name in file_paths:
     # Clean Borough column header
     df['Local authority'] = df['Local authority'].str.strip()
     df['Local authority'] = df['Local authority'].str.title()
-    
-    ##df = df[df['Local authority'].isin(['Barnet','Enfield','Islington','Haringey','Camden'])]
 
     # Remove columns with %
     df = df.drop(columns=[col for col in df.columns if '%' in col])
@@ -52,7 +53,8 @@ for file_name in file_paths:
     df = df_melted.pivot(index=["Local authority", "Year Group", "Gender"], columns="Metric", values="Value").reset_index()
 
     # Rename columns
-    df.rename(columns={"Local authority": "Local_Authority", "Year Group": "Year_Group", "Metric": "Index"}, inplace=True)
+    df.rename(columns={"Local authority": "Borough_Name", "Year Group": "Year_Group_Number", "Metric": "Index", "Gender": "Gender_Name", "Number": "Students_Total", 
+                       "Number_Vaccinated": "Students_Vaccinated"}, inplace=True)
 
     # Add 'Academic Year' and 'Academic Year End Date' column
     date = excel_data.iloc[0, 0].split()[-1]
@@ -60,7 +62,8 @@ for file_name in file_paths:
     full_date = excel_data.iloc[0,0].split(',')[-1].strip()
     df['Academic_Year_Text'] = full_date
     # Add Extract Date column
-    df["Extract_Date"] = datetime.today()
+    df["Date_Extract"] = extract_date
+
 
     # Append processed data to the list
     dataframes.append(df)
@@ -69,7 +72,7 @@ for file_name in file_paths:
 combined_df = pd.concat(dataframes, ignore_index=True)
 
 # Final Cleaning (2019-2020)
-combined_df = combined_df.dropna(subset=["Number", "Number_Vaccinated"])
+combined_df = combined_df.dropna(subset=["Students_Total", "Students_Vaccinated"])
 combined_df.replace("*", None, inplace=True)
 combined_df.replace("[E]", None, inplace=True)
 combined_df.replace("[DS]", None, inplace=True)
@@ -77,38 +80,38 @@ combined_df.replace("[DS]", None, inplace=True)
 
 ## Add 'Both' Gender Category
 both_df = combined_df.copy()
-both_df["Gender"] = "Both"
+both_df["Gender_Name"] = "Both"
 
 # Group by the relevant columns while summing numeric fields
 both_df = both_df.groupby(
-    ["Local_Authority", "Year_Group", "Gender", "Academic_Year_End_Date", "Academic_Year_Text", "Extract_Date"],
+    ["Borough_Name", "Year_Group_Number", "Gender_Name", "Academic_Year_End_Date", "Academic_Year_Text", "Date_Extract"],
     as_index=False
 ).agg({
-    "Number": "sum",
-    "Number_Vaccinated": "sum"
+    "Students_Total": "sum",
+    "Students_Vaccinated": "sum"
 })
 
 # Combine original dataset with 'Both' gender records
-second_df = pd.concat([combined_df, both_df], ignore_index=True)
+all_gender_df = pd.concat([combined_df, both_df], ignore_index=True)
 
 
 ## Add 'All' Year Category
-year_df = second_df.copy()
-year_df["Year_Group"] = "All"
+year_df = all_gender_df.copy()
+year_df["Year_Group_Number"] = "All"
 
 # Group by the relevant columns while summing numeric fields
 year_df = year_df.groupby(
-    ["Local_Authority", "Year_Group", "Gender", "Academic_Year_End_Date", "Academic_Year_Text", "Extract_Date"],
+    ["Borough_Name", "Year_Group_Number", "Gender_Name", "Academic_Year_End_Date", "Academic_Year_Text", "Date_Extract"],
     as_index=False
 ).agg({
-    "Number": "sum",
-    "Number_Vaccinated": "sum"
+    "Students_Total": "sum",
+    "Students_Vaccinated": "sum"
 })
 
 
 
 # Combine 'All Years' dataset with 'Both' gender records
-final_df = pd.concat([second_df, year_df], ignore_index=True)
+final_df = pd.concat([all_gender_df, year_df], ignore_index=True)
 final_df.columns = [c.upper() for c in final_df.columns]
 
 #Establish Snowflake connection
@@ -130,4 +133,4 @@ ctx = connect(
 
 destination_prov = f"{database}.{schema}.{table_prov}"
 
-db.upload_hpv_data(ctx, final_df, destination_prov, replace = False)
+db.upload_hpv_data(ctx, final_df, destination_prov, replace = True)
