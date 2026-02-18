@@ -2,7 +2,7 @@
 
 This git repository contains code to process HPV Vaccination coverage data.
 
-The code performs a basic ETL process on the data available and uploads the data to Snowflake - into the DEV_MODELLING Database and CANCER__VACCINATION Schema.
+The code performs a basic ETL process on the data available and uploads the data to Snowflake - into the MODELLING Database and CANCER__CCO Schema.
 
 ## Steps to Run This ETL Project
 
@@ -62,7 +62,7 @@ NOTE - This python code replaces the data in the table each time it is run. Ther
 - Enable the virtual environment (see the onboarding document linked in the First Time Installation section).
 - Ensure you fill in your Snowflake connection details in a .env file
 - Execute the src/main.py file by opening the src/main.py file in VSCode and using the Run arrow button in the top right of the window.
-- Once Excecuted, the code will print 'Uploaded X rows to MODELLING.CANCER__PRIMARY_CARE.HPV_UPTAKE'
+- Once Excecuted, the code will print 'Uploaded X rows to MODELLING.CANCER__CCO.HPV_UPTAKE'
 
 ## Licence
 This repository is dual licensed under the Open Government v3 & MIT. All code can outputs are subject to Crown Copyright.

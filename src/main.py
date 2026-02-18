@@ -59,8 +59,13 @@ for file_name in file_paths:
     # Add 'Academic Year' and 'Academic Year End Date' column
     date = excel_data.iloc[0, 0].split()[-1]
     df['Academic_Year_End_Date'] = date
-    full_date = excel_data.iloc[0,0].split(',')[-1].strip()
-    df['Academic_Year_Text'] = full_date
+
+    import re
+    text = excel_data.iloc[0, 0]
+    match = re.search(r"([A-Za-z]+ \d{4} to [A-Za-z]+ \d{4})", text)
+    if match:
+        df['Academic_Year_Text'] = match.group(1)
+
     # Add Extract Date column
     df["Date_Extract"] = extract_date
 
